@@ -5,6 +5,7 @@ import { vapi } from '@/lib/vapi.sdk';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import{interviewer} from "@/constants"
 
 // UPDATE: Added optional 'interviewer' and 'questions' to the props interface
 interface AgentProps {
@@ -35,7 +36,7 @@ interface SavedMessage {
 }
 
 
-const Agent = ({userName, userId, type, interviewer, questions}:AgentProps) => {
+const Agent = ({userName, userId, type, interviewId, questions}:AgentProps) => {
 
     const router = useRouter();
 
@@ -76,7 +77,30 @@ const Agent = ({userName, userId, type, interviewer, questions}:AgentProps) => {
       }
     }, []);
 
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+      console.log('generate feedback', messages);
+      const {success,id} = {
+        success: true,
+        id: 'feedback-id'  
+      }
+      if(success && id) {
+        router.push(`/interview/${interviewId}/feedback`);
+      }else{
+        console.log('error generating feedback');
+        router.push('/');
+      }
+      
+    }
+
     useEffect(() => {
+      if(callStatus === CallStatus.FINISHED) {
+        if(type === 'generate') {
+          router.push('/');
+          
+        }else {
+          handleGenerateFeedback(messages);
+        }
+      }
       if(callStatus === CallStatus.FINISHED) {
         router.push('/');
       }
@@ -87,11 +111,7 @@ const Agent = ({userName, userId, type, interviewer, questions}:AgentProps) => {
         setCallStatus(CallStatus.CONNECTING);
     
         if (type === "generate") {
-          // Call vapi.start with undefined for agent to use the workflow ID
           await vapi.start(
-            undefined,
-            undefined,
-            undefined,
             process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!,
             {
               variableValues: {
