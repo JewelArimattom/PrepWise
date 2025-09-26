@@ -4,79 +4,209 @@ import { db } from "@/firebase/admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getCurrentUser } from "./auth.action"; // Your user authentication action
 
-// Placeholder for your actual AI API call.
-async function callAIToGenerateQuestions(prompt: string): Promise<string[]> {
-  const questionTemplates = {
-    technical: [
-      `Explain how you would implement {concept} in {techStack}`,
-      `Describe your experience with {technology} and how you've used it in production`,
-      `How would you optimize {component} for better performance?`,
-      `What are the key differences between {tech1} and {tech2}?`,
-      `How would you debug a {problem} issue in {environment}?`
-    ],
-    behavioral: [
-      `Tell me about a challenging project where you used {techStack}`,
-      `How do you handle disagreements with {stakeholder}?`,
-      `Describe a time you had to learn {technology} quickly for a project`,
-      `Share an experience where you improved {process} in your team`,
-      `How do you prioritize tasks when working on {scenario}?`
-    ],
-    system_design: [
-      `Design a scalable {system} that handles {requirement}`,
-      `How would you architect a {service} using {techStack}?`,
-      `Explain your approach to designing {feature} for high availability`,
-      `How would you handle {scale} of data in {context}?`,
-      `Describe the tradeoffs in your design of {component}`
-    ]
-  };
+// First, let's add more structured types for our questions
+interface QuestionContext {
+  role: string;
+  level: string;
+  techStack: string[];
+  type: string;
+}
 
-  const technologies = {
-    frontend: ['React', 'Angular', 'Vue', 'Next.js', 'TypeScript'],
-    backend: ['Node.js', 'Python', 'Java', 'Go', 'PHP'],
-    database: ['MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'Elasticsearch'],
-    cloud: ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes']
-  };
+interface QuestionTemplate {
+  template: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  category: string;
+  requiresTechStack?: boolean;
+}
 
-  // Parse the prompt to extract key information
-  const level = prompt.includes('senior') ? 'senior' : 'junior';
-  const type = prompt.toLowerCase().includes('technical') ? 'technical' : 
-               prompt.toLowerCase().includes('system') ? 'system_design' : 'behavioral';
+const questionBank = {
+  technical: [
+    {
+      template: "How would you implement {feature} using {tech}?",
+      difficulty: "intermediate",
+      category: "implementation",
+      requiresTechStack: true
+    },
+    {
+      template: "Explain the architecture decisions you would make when building {system} that needs to handle {scale}",
+      difficulty: "advanced",
+      category: "system_design"
+    },
+    {
+      template: "What are the key performance considerations when working with {tech} in {scenario}?",
+      difficulty: "advanced",
+      category: "performance",
+      requiresTechStack: true
+    },
+    {
+      template: "How would you handle error handling and logging for {feature} in {tech}?",
+      difficulty: "intermediate",
+      category: "implementation",
+      requiresTechStack: true
+    },
+    {
+      template: "Describe your approach to testing {feature} using {tech}",
+      difficulty: "intermediate",
+      category: "testing",
+      requiresTechStack: true
+    }
+  ] as QuestionTemplate[],
   
-  const selectedTemplates = questionTemplates[type];
-  const questions = selectedTemplates.map(template => {
-    // Replace placeholders with relevant content
-    return template
-      .replace('{techStack}', technologies.frontend.concat(technologies.backend)
-        .sort(() => Math.random() - 0.5)[0])
-      .replace('{technology}', technologies.frontend.concat(technologies.backend)
-        .sort(() => Math.random() - 0.5)[0])
-      .replace('{concept}', level === 'senior' ? 
-        'advanced state management' : 'basic component architecture')
-      .replace('{component}', level === 'senior' ? 
-        'a complex data grid' : 'a simple form')
-      .replace('{stakeholder}', level === 'senior' ? 
-        'team leads' : 'team members')
-      .replace('{process}', level === 'senior' ? 
-        'the development workflow' : 'code quality')
-      .replace('{scenario}', level === 'senior' ? 
-        'multiple concurrent projects' : 'your assigned tasks')
-      .replace('{system}', level === 'senior' ? 
-        'microservices architecture' : 'basic web application')
-      .replace('{requirement}', level === 'senior' ? 
-        'millions of concurrent users' : 'thousands of daily users')
-      .replace('{service}', level === 'senior' ? 
-        'distributed system' : 'monolithic application')
-      .replace('{scale}', level === 'senior' ? 
-        'petabytes' : 'gigabytes')
-      .replace('{context}', 'real-time processing')
-      .replace('{problem}', level === 'senior' ? 
-        'complex performance' : 'common runtime')
-      .replace('{environment}', level === 'senior' ? 
-        'production' : 'development');
+  behavioral: [
+    {
+      template: "Describe a challenging situation where you had to learn {tech} quickly. How did you approach it?",
+      difficulty: "intermediate",
+      category: "learning",
+      requiresTechStack: true
+    },
+    {
+      template: "Tell me about a time when you improved {process} in your team. What was the impact?",
+      difficulty: "intermediate",
+      category: "leadership"
+    },
+    {
+      template: "How do you handle conflicts in {scenario} situations?",
+      difficulty: "intermediate",
+      category: "teamwork"
+    },
+    {
+      template: "Describe a situation where you had to make a difficult technical decision about {tech}",
+      difficulty: "advanced",
+      category: "decision_making",
+      requiresTechStack: true
+    },
+    {
+      template: "How do you approach mentoring junior developers in {tech}?",
+      difficulty: "advanced",
+      category: "leadership",
+      requiresTechStack: true
+    }
+  ] as QuestionTemplate[],
+  
+  balanced: [
+    // Mix of technical and behavioral questions
+    {
+      template: "How do you ensure code quality when working with {tech}?",
+      difficulty: "intermediate",
+      category: "best_practices",
+      requiresTechStack: true
+    },
+    {
+      template: "Describe your approach to documenting {feature} for other developers",
+      difficulty: "intermediate",
+      category: "communication"
+    },
+    {
+      template: "How do you balance technical debt vs new features in {scenario}?",
+      difficulty: "advanced",
+      category: "decision_making"
+    }
+  ] as QuestionTemplate[]
+};
+
+const contextData = {
+  features: [
+    "authentication system",
+    "real-time data synchronization",
+    "caching layer",
+    "search functionality",
+    "payment processing",
+    "file upload system"
+  ],
+  systems: [
+    "e-commerce platform",
+    "social media application",
+    "content management system",
+    "real-time messaging service",
+    "data analytics dashboard"
+  ],
+  scales: [
+    "millions of daily active users",
+    "terabytes of data processing",
+    "global distributed traffic",
+    "high-concurrency operations",
+    "real-time event processing"
+  ],
+  processes: [
+    "code review workflow",
+    "deployment pipeline",
+    "testing strategy",
+    "documentation process",
+    "team collaboration"
+  ],
+  scenarios: [
+    "high-load production environment",
+    "distributed microservices architecture",
+    "legacy system migration",
+    "startup rapid development",
+    "enterprise-scale application"
+  ]
+};
+
+async function callAIToGenerateQuestions(prompt: string): Promise<string[]> {
+  const context: QuestionContext = {
+    role: prompt.includes('engineer') ? 'engineer' : 'developer',
+    level: prompt.includes('senior') ? 'advanced' : prompt.includes('junior') ? 'beginner' : 'intermediate',
+    techStack: prompt.match(/experience in (.*?)\./)?.[1].split(',').map(t => t.trim()) || [],
+    type: prompt.toLowerCase().includes('technical') ? 'technical' : 
+          prompt.toLowerCase().includes('behavioral') ? 'behavioral' : 'balanced'
+  };
+
+  const generateQuestion = (template: QuestionTemplate): string => {
+    let question = template.template;
+    
+    // Replace placeholders with context-appropriate content
+    question = question
+      .replace('{feature}', contextData.features[Math.floor(Math.random() * contextData.features.length)])
+      .replace('{system}', contextData.systems[Math.floor(Math.random() * contextData.systems.length)])
+      .replace('{scale}', contextData.scales[Math.floor(Math.random() * contextData.scales.length)])
+      .replace('{process}', contextData.processes[Math.floor(Math.random() * contextData.processes.length)])
+      .replace('{scenario}', contextData.scenarios[Math.floor(Math.random() * contextData.scenarios.length)]);
+
+    // If template requires tech stack, insert relevant technology
+    if (template.requiresTechStack && context.techStack.length > 0) {
+      question = question.replace('{tech}', context.techStack[Math.floor(Math.random() * context.techStack.length)]);
+    }
+
+    return question;
+  };
+
+  const getQuestionCount = (prompt: string): number => {
+    const match = prompt.match(/Prepare (\d+)/);
+    return match ? parseInt(match[1]) : 5;
+  };
+
+  // Get all relevant templates based on type and difficulty
+  let templates = [...questionBank[context.type as keyof typeof questionBank]];
+  
+  // If balanced type, include questions from both technical and behavioral
+  if (context.type === 'balanced') {
+    templates = [
+      ...templates,
+      ...questionBank.technical.slice(0, 2),
+      ...questionBank.behavioral.slice(0, 2)
+    ];
+  }
+
+  // Filter by difficulty
+  templates = templates.filter(template => {
+    if (context.level === 'beginner') return template.difficulty === 'beginner';
+    if (context.level === 'intermediate') return template.difficulty !== 'advanced';
+    return true; // For advanced level, include all questions
   });
 
-  // Randomize the order of questions
-  return questions.sort(() => Math.random() - 0.5);
+  // Generate the requested number of unique questions
+  const questionCount = getQuestionCount(prompt);
+  const questions = new Set<string>();
+  
+  // Keep trying to generate questions until we have enough or run out of templates
+  while (questions.size < Math.min(questionCount, templates.length)) {
+    const template = templates[Math.floor(Math.random() * templates.length)];
+    const question = generateQuestion(template);
+    questions.add(question);
+  }
+
+  return Array.from(questions);
 }
 
 interface FormData {
