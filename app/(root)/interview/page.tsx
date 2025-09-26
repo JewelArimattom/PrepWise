@@ -1,21 +1,11 @@
-import Agent from "@/components/Agent";
-import { getCurrentUser } from "@/lib/actions/auth.action";
+import InterviewSetupForm from "@/components/InterviewSetupForm";
 
-const Page = async () => {
-  const user = await getCurrentUser();
-
+const InterviewGenerationPage = () => {
   return (
-    <>
-      <h3>Interview generation</h3>
-
-      <Agent
-        userName={user?.name!}
-        userId={user?.id}
-        profileImage={user?.profileURL}
-        type="generate"
-      />
-    </>
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
+      <InterviewSetupForm />
+    </main>
   );
 };
 
-export default Page;
+export default InterviewGenerationPage;

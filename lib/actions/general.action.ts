@@ -2,6 +2,7 @@
 
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
+import { FieldValue } from "firebase-admin/firestore"; // IMPROVEMENT: Import FieldValue
 
 import { db } from "@/firebase/admin";
 import { feedbackSchema } from "@/constants";
@@ -18,9 +19,8 @@ export async function createFeedback(params: CreateFeedbackParams) {
       .join("");
 
     const { object } = await generateObject({
-      model: google("gemini-2.0-flash-001", {
-        structuredOutputs: false,
-      }),
+      // FIX: Use a valid and current model name
+      model: google("gemini-1.5-flash-latest"), 
       schema: feedbackSchema,
       prompt: `
         You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the candidate. If there are mistakes or areas for improvement, point them out.
@@ -46,7 +46,8 @@ export async function createFeedback(params: CreateFeedbackParams) {
       strengths: object.strengths,
       areasForImprovement: object.areasForImprovement,
       finalAssessment: object.finalAssessment,
-      createdAt: new Date().toISOString(),
+      // IMPROVEMENT: Use Firestore's server timestamp
+      createdAt: FieldValue.serverTimestamp(),
     };
 
     let feedbackRef;
@@ -67,10 +68,18 @@ export async function createFeedback(params: CreateFeedbackParams) {
 }
 
 export async function getInterviewById(id: string): Promise<Interview | null> {
-  const interview = await db.collection("interviews").doc(id).get();
+  const interviewRef = db.collection("interviews").doc(id);
+  const interview = await interviewRef.get();
 
-  return interview.data() as Interview | null;
+  // IMPROVEMENT: Check if the document exists and include its ID in the return value
+  if (!interview.exists) {
+    return null;
+  }
+  
+  return { id: interview.id, ...interview.data() } as Interview;
 }
+
+// No changes needed below this line, your other functions look great.
 
 export async function getFeedbackByInterviewId(
   params: GetFeedbackByInterviewIdParams
