@@ -146,78 +146,100 @@ const Agent = ({
   };
 
   return (
-    <>
-      <div className="call-view">
-        {/* AI Interviewer Card */}
-        <div className="card-interviewer">
-          <div className="avatar">
+  <div className="space-y-10">
+    {/* Header */}
+    <div className="text-center">
+      <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        {type === "generate" ? "Practice Interview" : "Technical Assessment"}
+      </h2>
+      <p className="text-gray-400 mt-2 text-sm">Live AI-powered interview session</p>
+    </div>
+
+    {/* Participants */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* AI Interviewer */}
+      <div className="bg-gray-800/40 p-6 rounded-2xl border border-gray-700/50 shadow-lg">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
             <Image
               src="/ai-avatar.png"
-              alt="profile-image"
-              width={65}
-              height={54}
-              className="object-cover"
+              alt="AI Interviewer"
+              width={90}
+              height={90}
+              className="rounded-full border-4 border-blue-500/40 shadow-md"
             />
-            {isSpeaking && <span className="animate-speak" />}
+            {isSpeaking && (
+              <span className="absolute bottom-0 right-0 h-5 w-5 bg-blue-500 rounded-full animate-pulse" />
+            )}
           </div>
-          <h3>AI Interviewer</h3>
+          <h3 className="text-lg font-semibold text-gray-200">AI Interviewer</h3>
+          <p className="text-sm text-gray-400">Technical Expert</p>
         </div>
+      </div>
 
-        {/* User Profile Card */}
-        <div className="card-border">
-          <div className="card-content">
+      {/* User */}
+      <div className="bg-gray-800/40 p-6 rounded-2xl border border-gray-700/50 shadow-lg">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
             <Image
               src="/user-avatar.png"
-              alt="profile-image"
-              width={539}
-              height={539}
-              className="rounded-full object-cover size-[120px]"
+              alt={userName}
+              width={90}
+              height={90}
+              className="rounded-full border-4 border-purple-500/40 shadow-md"
             />
-            <h3>{userName}</h3>
+            {callStatus === "ACTIVE" && (
+              <span className="absolute bottom-0 right-0 h-5 w-5 bg-green-500 rounded-full" />
+            )}
           </div>
+          <h3 className="text-lg font-semibold text-gray-200">{userName}</h3>
+          <p className="text-sm text-gray-400">Candidate</p>
         </div>
       </div>
+    </div>
 
-      {messages.length > 0 && (
-        <div className="transcript-border">
-          <div className="transcript">
-            <p
-              key={lastMessage}
-              className={cn(
-                "transition-opacity duration-500 opacity-0",
-                "animate-fadeIn opacity-100"
-              )}
-            >
-              {lastMessage}
-            </p>
-          </div>
+    {/* Transcript */}
+    {messages.length > 0 && (
+      <div className="bg-gray-800/30 rounded-2xl border border-gray-700/50 p-6 shadow-inner">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-sm font-medium text-gray-400">Live Transcript</h4>
+          <span className="text-xs text-gray-500 bg-gray-700/50 px-2 py-1 rounded-md">
+            {messages.length} messages
+          </span>
         </div>
+        <p className="text-gray-200 text-lg leading-relaxed animate-fadeIn">
+          {lastMessage}
+        </p>
+      </div>
+    )}
+
+    {/* Controls */}
+    <div className="flex justify-center">
+      {callStatus !== "ACTIVE" ? (
+        <button
+          onClick={() => handleCall()}
+          disabled={callStatus === "CONNECTING"}
+          className={cn(
+            "px-10 py-4 rounded-xl font-medium text-white transition-all duration-300",
+            callStatus === "CONNECTING"
+              ? "bg-gray-700/50 text-gray-400 cursor-wait"
+              : "bg-gradient-to-r from-blue-500 to-purple-500 hover:scale-105 shadow-lg hover:shadow-blue-500/20"
+          )}
+        >
+          {callStatus === "CONNECTING" ? "Connecting..." : "Start Interview"}
+        </button>
+      ) : (
+        <button
+          onClick={() => handleDisconnect()}
+          className="px-10 py-4 rounded-xl font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-all duration-300 shadow-md"
+        >
+          End Interview
+        </button>
       )}
+    </div>
+  </div>
+);
 
-      <div className="w-full flex justify-center">
-        {callStatus !== "ACTIVE" ? (
-          <button className="relative btn-call" onClick={() => handleCall()}>
-            <span
-              className={cn(
-                "absolute animate-ping rounded-full opacity-75",
-                callStatus !== "CONNECTING" && "hidden"
-              )}
-            />
-
-            <span className="relative">
-              {callStatus === "INACTIVE" || callStatus === "FINISHED"
-                ? "Call"
-                : ". . ."}
-            </span>
-          </button>
-        ) : (
-          <button className="btn-disconnect" onClick={() => handleDisconnect()}>
-            End
-          </button>
-        )}
-      </div>
-    </>
-  );
 };
 
 export default Agent;
