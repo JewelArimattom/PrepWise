@@ -239,9 +239,10 @@ export async function generateAndSaveInterview(
       userId: user.id,
       role,
       level,
-      techStack: techStack.split(',').map(t => t.trim()),
+      techstack: techStack.split(',').map(t => t.trim()),
       type,
       questions,
+      finalized: false,
       createdAt: FieldValue.serverTimestamp(),
     };
 

@@ -1,11 +1,20 @@
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
-import { Mona_Sans } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
+
+/* Client component wrapper — holds all ssr:false dynamic imports */
+import ClientBackgrounds from "@/components/ClientBackgrounds";
+import CursorGlow from "@/components/CursorGlow";
 
 import "./globals.css";
 
-const monaSans = Mona_Sans({
-  variable: "--font-mona-sans",
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
@@ -21,7 +30,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${monaSans.className} antialiased pattern`}>
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} antialiased premium-bg`}
+      >
+        {/* CSS gradient mesh + 3D WebGL layer (lazy, client-only) */}
+        <ClientBackgrounds />
+
+        <CursorGlow />
         {children}
 
         <Toaster />

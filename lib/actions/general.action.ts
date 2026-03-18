@@ -1,11 +1,81 @@
 "use server";
 
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
-import { FieldValue } from "firebase-admin/firestore"; // IMPROVEMENT: Import FieldValue
+import { FieldValue } from "firebase-admin/firestore";
 
 import { db } from "@/firebase/admin";
 import { feedbackSchema } from "@/constants";
+
+type FirestoreDateLike = { toDate: () => Date };
+
+const isFirestoreDateLike = (value: unknown): value is FirestoreDateLike =>
+  typeof value === "object" &&
+  value !== null &&
+  "toDate" in value &&
+  typeof (value as FirestoreDateLike).toDate === "function";
+
+const normalizeFirestoreDate = (value: unknown) =>
+  isFirestoreDateLike(value) ? value.toDate().toISOString() : value;
+
+const mapInterviewDoc = (doc: FirebaseFirestore.QueryDocumentSnapshot) => {
+  const data = doc.data();
+  return {
+    id: doc.id,
+    ...data,
+    techstack: data.techstack ?? data.techStack ?? [],
+    createdAt: normalizeFirestoreDate(data.createdAt),
+  } as Interview;
+};
+
+const isMissingIndexError = (error: unknown) =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  (error as { code?: number }).code === 9;
+
+/* ── Model fallback chain — lite has highest free-tier quota ── */
+const GEMINI_MODELS = [
+  "gemini-2.0-flash-lite",   // best free-tier RPM + RPD
+  "gemini-1.5-flash-8b",     // smallest 1.5 model, very generous quota
+  "gemini-2.0-flash",        // full model, lowest free quota
+];
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function generateWithFallback(prompt: string, system: string): Promise<string> {
+  let lastError: unknown;
+
+  for (const modelId of GEMINI_MODELS) {
+    try {
+      const { text } = await generateText({
+        model: google(modelId),
+        prompt,
+        system,
+      });
+      return text;
+    } catch (err: unknown) {
+      lastError = err;
+      const status =
+        err &&
+        typeof err === "object" &&
+        "statusCode" in err
+          ? (err as { statusCode: number }).statusCode
+          : 0;
+
+      if (status === 429) {
+        /* quota hit — wait 5 s then try next model */
+        console.warn(`[AI] quota hit on ${modelId}, trying fallback...`);
+        await wait(5000);
+        continue;
+      }
+      /* non-quota error — fail fast, don't try next model */
+      throw err;
+    }
+  }
+
+  throw lastError;
+}
 
 export async function createFeedback(params: CreateFeedbackParams) {
   const { interviewId, userId, transcript, feedbackId } = params;
@@ -18,25 +88,36 @@ export async function createFeedback(params: CreateFeedbackParams) {
       )
       .join("");
 
-    const { object } = await generateObject({
-      // FIX: Use a valid and current model name
-      model: google("gemini-1.5-flash-latest"), 
-      schema: feedbackSchema,
-      prompt: `
+    const text = await generateWithFallback(
+      `
         You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the candidate. If there are mistakes or areas for improvement, point them out.
         Transcript:
         ${formattedTranscript}
 
-        Please score the candidate from 0 to 100 in the following areas. Do not add categories other than the ones provided:
-        - **Communication Skills**: Clarity, articulation, structured responses.
-        - **Technical Knowledge**: Understanding of key concepts for the role.
-        - **Problem-Solving**: Ability to analyze problems and propose solutions.
-        - **Cultural & Role Fit**: Alignment with company values and job role.
-        - **Confidence & Clarity**: Confidence in responses, engagement, and clarity.
+        Return ONLY valid JSON (no markdown, no code fences) using this exact shape:
+        {
+          "totalScore": number,
+          "categoryScores": [
+            { "name": "Communication Skills", "score": number, "comment": string },
+            { "name": "Technical Knowledge", "score": number, "comment": string },
+            { "name": "Problem Solving", "score": number, "comment": string },
+            { "name": "Cultural Fit", "score": number, "comment": string },
+            { "name": "Confidence and Clarity", "score": number, "comment": string }
+          ],
+          "strengths": string[],
+          "areasForImprovement": string[],
+          "finalAssessment": string
+        }
         `,
-      system:
-        "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
-    });
+      "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories"
+    );
+
+    const normalizedText = text
+      .replace(/```json|```/g, "")
+      .trim()
+      .replace(/^[\s\S]*(\{)/, "$1")
+      .replace(/(\})[\s\S]*$/, "$1");
+    const object = feedbackSchema.parse(JSON.parse(normalizedText));
 
     const feedback = {
       interviewId: interviewId,
@@ -46,7 +127,6 @@ export async function createFeedback(params: CreateFeedbackParams) {
       strengths: object.strengths,
       areasForImprovement: object.areasForImprovement,
       finalAssessment: object.finalAssessment,
-      // IMPROVEMENT: Use Firestore's server timestamp
       createdAt: FieldValue.serverTimestamp(),
     };
 
@@ -59,11 +139,31 @@ export async function createFeedback(params: CreateFeedbackParams) {
     }
 
     await feedbackRef.set(feedback);
+    await db.collection("interviews").doc(interviewId).set(
+      {
+        finalized: true,
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
 
     return { success: true, feedbackId: feedbackRef.id };
   } catch (error) {
     console.error("Error saving feedback:", error);
-    return { success: false };
+
+    /* Distinguish quota errors for a friendlier message */
+    const isQuota =
+      error &&
+      typeof error === "object" &&
+      "statusCode" in error &&
+      (error as { statusCode: number }).statusCode === 429;
+
+    return {
+      success: false,
+      error: isQuota
+        ? "AI quota exceeded. Please wait a minute and try again — or add billing to your Google AI account."
+        : "Failed to generate feedback report.",
+    };
   }
 }
 
@@ -76,7 +176,13 @@ export async function getInterviewById(id: string): Promise<Interview | null> {
     return null;
   }
   
-  return { id: interview.id, ...interview.data() } as Interview;
+  const data = interview.data();
+  return {
+    id: interview.id,
+    ...data,
+    techstack: data?.techstack ?? data?.techStack ?? [],
+    createdAt: normalizeFirestoreDate(data?.createdAt),
+  } as Interview;
 }
 
 // No changes needed below this line, your other functions look great.
@@ -96,39 +202,79 @@ export async function getFeedbackByInterviewId(
   if (querySnapshot.empty) return null;
 
   const feedbackDoc = querySnapshot.docs[0];
-  return { id: feedbackDoc.id, ...feedbackDoc.data() } as Feedback;
+  const data = feedbackDoc.data();
+  return {
+    id: feedbackDoc.id,
+    ...data,
+    createdAt: normalizeFirestoreDate(data.createdAt),
+  } as Feedback;
+}
+
+export async function getFeedbackByUserId(
+  userId?: string
+): Promise<Record<string, Feedback>> {
+  if (!userId) return {};
+
+  const querySnapshot = await db
+    .collection("feedback")
+    .where("userId", "==", userId)
+    .get();
+
+  return querySnapshot.docs.reduce<Record<string, Feedback>>((acc, doc) => {
+    const data = doc.data();
+    const feedback = {
+      id: doc.id,
+      ...data,
+      createdAt: normalizeFirestoreDate(data.createdAt),
+    } as Feedback;
+
+    acc[feedback.interviewId] = feedback;
+    return acc;
+  }, {});
 }
 
 export async function getLatestInterviews(
   params: GetLatestInterviewsParams
-): Promise<Interview[] | null> {
-  const { userId, limit = 20 } = params;
+): Promise<Interview[]> {
+  const { limit = 20 } = params;
 
-  const interviews = await db
-    .collection("interviews")
-    .orderBy("createdAt", "desc")
-    .where("finalized", "==", true)
-    .where("userId", "!=", userId)
-    .limit(limit)
-    .get();
+  let interviews: FirebaseFirestore.QuerySnapshot;
+  try {
+    interviews = await db
+      .collection("interviews")
+      .orderBy("createdAt", "desc")
+      .limit(limit)
+      .get();
+  } catch (error) {
+    if (!isMissingIndexError(error)) throw error;
 
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
+    interviews = await db
+      .collection("interviews")
+      .limit(limit * 3)
+      .get();
+  }
+
+  const mappedInterviews = interviews.docs
+    .map(mapInterviewDoc)
+    .sort(
+      (a, b) =>
+        (Date.parse(String(b.createdAt ?? "")) || 0) -
+        (Date.parse(String(a.createdAt ?? "")) || 0)
+    );
+
+  return mappedInterviews.slice(0, limit);
 }
 
 export async function getInterviewsByUserId(
-  userId: string
-): Promise<Interview[] | null> {
+  userId?: string
+): Promise<Interview[]> {
+  if (!userId) return [];
+
   const interviews = await db
     .collection("interviews")
     .where("userId", "==", userId)
     .orderBy("createdAt", "desc")
     .get();
 
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
+  return interviews.docs.map(mapInterviewDoc);
 }

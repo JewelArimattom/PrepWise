@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { generateAndSaveInterview } from "@/lib/actions/interview.action";
 import { Button } from "./ui/button";
 
@@ -44,49 +45,69 @@ const InterviewSetupForm = () => {
     }
   };
 
+  const inputClasses =
+    "w-full px-4 py-3.5 bg-white/[0.04] border border-white/10 rounded-xl text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/30 transition-all duration-300 outline-none backdrop-blur-sm";
+
+  const labelClasses = "block text-sm font-medium text-gray-300 mb-1.5";
+
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 sm:p-10">
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-2xl border border-gray-700">
-        <div className="p-6 sm:p-8">
-          {/* Header Section */}
-          <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-3">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full max-w-3xl mx-auto p-6 sm:p-10"
+    >
+      <div className="relative rounded-3xl shadow-2xl border border-white/8 overflow-hidden">
+        {/* glass background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent backdrop-blur-2xl" />
+        {/* glow accents */}
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-violet-500/10 rounded-full blur-[100px]" />
+
+        <div className="relative p-6 sm:p-8">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-center mb-10"
+          >
+            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 mb-3">
               AI Interview Setup
             </h1>
             <p className="text-gray-400 text-lg">
               Create your personalized interview experience
             </p>
-          </div>
+          </motion.div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Role and Level Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Role + Level */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
               <div className="space-y-2">
-                <label htmlFor="role" className="block text-sm font-medium text-gray-300">
-                  Job Role
-                </label>
+                <label htmlFor="role" className={labelClasses}>Job Role</label>
                 <input
                   type="text"
                   name="role"
                   id="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-400
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className={inputClasses}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="level" className="block text-sm font-medium text-gray-300">
-                  Experience Level
-                </label>
+                <label htmlFor="level" className={labelClasses}>Experience Level</label>
                 <select
                   name="level"
                   id="level"
                   value={formData.level}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-200
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className={inputClasses}
                   required
                 >
                   <option>Junior</option>
@@ -94,37 +115,41 @@ const InterviewSetupForm = () => {
                   <option>Senior</option>
                 </select>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Tech Stack Section */}
-            <div className="space-y-2">
-              <label htmlFor="techStack" className="block text-sm font-medium text-gray-300">
-                Tech Stack (comma-separated)
-              </label>
+            {/* Tech Stack */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="space-y-2"
+            >
+              <label htmlFor="techStack" className={labelClasses}>Tech Stack (comma-separated)</label>
               <textarea
                 name="techStack"
                 id="techStack"
                 value={formData.techStack}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-400
-                         focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 min-h-[100px]"
+                className={`${inputClasses} min-h-[100px] resize-none`}
                 required
               />
-            </div>
+            </motion.div>
 
-            {/* Question Type and Amount Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Type + Amount */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
               <div className="space-y-2">
-                <label htmlFor="type" className="block text-sm font-medium text-gray-300">
-                  Question Focus
-                </label>
+                <label htmlFor="type" className={labelClasses}>Question Focus</label>
                 <select
                   name="type"
                   id="type"
                   value={formData.type}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-200
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className={inputClasses}
                   required
                 >
                   <option>Behavioural</option>
@@ -133,78 +158,125 @@ const InterviewSetupForm = () => {
                 </select>
               </div>
               <div className="space-y-2">
-                <label htmlFor="amount" className="block text-sm font-medium text-gray-300">
-                  Number of Questions
-                </label>
+                <label htmlFor="amount" className={labelClasses}>Number of Questions</label>
                 <input
                   type="number"
                   name="amount"
                   id="amount"
                   value={formData.amount}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-gray-200
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className={inputClasses}
                   min="1"
                   max="20"
                   required
                 />
               </div>
-            </div>
+            </motion.div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl text-white font-medium
-                       transform transition-all duration-200 hover:from-blue-600 hover:to-purple-600 
-                       disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            {/* Submit */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
             >
-              {isLoading ? "Generating..." : "✨ Generate Interview"}
-            </button>
+              <motion.button
+                type="submit"
+                disabled={isLoading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-xl text-white font-semibold
+                         disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_8px_32px_rgba(96,165,250,0.3)] hover:shadow-[0_12px_48px_rgba(96,165,250,0.45)] transition-shadow duration-300 relative overflow-hidden"
+              >
+                {!isLoading && (
+                  <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                )}
+                <span className="relative">
+                  {isLoading ? "Generating..." : "✨ Generate Interview"}
+                </span>
+              </motion.button>
+            </motion.div>
           </form>
 
-          {/* Results Section */}
+          {/* Results */}
           <div className="mt-10 space-y-6">
-            {isLoading && (
-              <div className="text-center text-gray-400 animate-pulse">
-                Crafting your perfect interview questions...
-              </div>
-            )}
-            
+            <AnimatePresence>
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center text-gray-400"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="size-2.5 rounded-full bg-blue-400"
+                        animate={{ y: [0, -8, 0], opacity: [0.4, 1, 0.4] }}
+                        transition={{
+                          duration: 0.6,
+                          repeat: Infinity,
+                          delay: i * 0.15,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-3 text-sm">Crafting your perfect interview questions...</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-6 rounded-xl text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/10 border border-red-500/20 text-red-400 p-6 rounded-xl text-center"
+              >
                 {error}
-              </div>
+              </motion.div>
             )}
 
-            {newInterviewId && generatedQuestions.length > 0 && (
-              <div className="space-y-6 bg-gray-800/30 p-6 rounded-xl border border-gray-700">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                  Interview Created! 🎉
-                </h2>
-                <div className="space-y-4">
-                  {generatedQuestions.map((q, index) => (
-                    <div key={index} className="flex items-start space-x-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                      <span className="text-blue-400 font-medium">{index + 1}.</span>
-                      <p className="text-gray-300">{q}</p>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  asChild
-                  className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-white font-medium
-                           hover:from-green-600 hover:to-emerald-600 transition-all duration-200"
+            <AnimatePresence>
+              {newInterviewId && generatedQuestions.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-6 bg-white/[0.03] backdrop-blur-md p-6 rounded-xl border border-white/10"
                 >
-                  <Link href={`/interview/${newInterviewId}`}>
-                    Start Your Interview →
-                  </Link>
-                </Button>
-              </div>
-            )}
+                  <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                    Interview Created! 🎉
+                  </h2>
+                  <div className="space-y-3">
+                    {generatedQuestions.map((q, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -15 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.08 }}
+                        className="flex items-start space-x-4 p-4 bg-white/[0.03] rounded-lg border border-white/8 hover:border-blue-500/20 transition-colors duration-300"
+                      >
+                        <span className="text-blue-400 font-medium shrink-0">{index + 1}.</span>
+                        <p className="text-gray-200">{q}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <Button
+                    asChild
+                    className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-white font-medium
+                             hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-[0_8px_32px_rgba(16,185,129,0.25)]"
+                  >
+                    <Link href={`/interview/${newInterviewId}`}>
+                      Start Your Interview →
+                    </Link>
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

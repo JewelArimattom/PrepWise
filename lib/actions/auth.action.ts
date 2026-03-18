@@ -2,6 +2,7 @@
 
 import { auth, db } from "@/firebase/admin";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 // Session duration (1 week)
 const SESSION_DURATION = 60 * 60 * 24 * 7;
@@ -96,8 +97,7 @@ export async function signOut() {
   cookieStore.delete("session");
 }
 
-// Get current user from session cookie
-export async function getCurrentUser(): Promise<User | null> {
+const getCurrentUserFromSession = cache(async (): Promise<User | null> => {
   const cookieStore = await cookies();
 
   const sessionCookie = cookieStore.get("session")?.value;
@@ -123,6 +123,11 @@ export async function getCurrentUser(): Promise<User | null> {
     // Invalid or expired session
     return null;
   }
+});
+
+// Get current user from session cookie
+export async function getCurrentUser(): Promise<User | null> {
+  return getCurrentUserFromSession();
 }
 
 // Check if user is authenticated
