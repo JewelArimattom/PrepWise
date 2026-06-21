@@ -17,7 +17,7 @@ const InterviewPage = async ({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center p-8 glass-panel rounded-2xl">
-          <p className="text-xl text-gray-300">Interview ID is missing.</p>
+          <p className="text-xl text-[#D8BFD8]">Interview ID is missing.</p>
         </div>
       </div>
     );
@@ -30,7 +30,7 @@ const InterviewPage = async ({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center p-8 glass-panel rounded-2xl">
-          <p className="text-xl text-gray-300">Interview not found.</p>
+          <p className="text-xl text-[#D8BFD8]">Interview not found.</p>
         </div>
       </div>
     );
@@ -42,26 +42,26 @@ const InterviewPage = async ({
     <main className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#D3D3FF] via-[#ED80E9] to-[#9400D3]">
             Technical Interview
           </h1>
           <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
             <div className="px-4 py-2 glass-panel rounded-xl text-sm">
-              <span className="text-gray-400">Role:</span>{" "}
+              <span className="text-[#D8BFD8]/60">Role:</span>{" "}
               <span className="text-gray-100 font-medium">{interviewData.role}</span>
             </div>
             <div className="px-4 py-2 glass-panel rounded-xl text-sm">
-              <span className="text-gray-400">Level:</span>{" "}
+              <span className="text-[#D8BFD8]/60">Level:</span>{" "}
               <span className="text-gray-100 font-medium">{interviewData.level}</span>
             </div>
             <div className="px-4 py-2 glass-panel rounded-xl text-sm">
-              <span className="text-gray-400">Type:</span>{" "}
+              <span className="text-[#D8BFD8]/60">Type:</span>{" "}
               <span className="text-gray-100 font-medium">{interviewData.type}</span>
             </div>
           </div>
         </div>
 
-        <div className="glass-panel rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.3)] overflow-hidden">
+        <div className="glass-panel rounded-2xl shadow-[0_16px_64px_rgba(12,7,20,0.5)] overflow-hidden">
           <div className="p-6 sm:p-8">
             <Agent
               userName={user.name!}

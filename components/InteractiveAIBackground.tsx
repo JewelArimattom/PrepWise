@@ -52,7 +52,7 @@ function Particles({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: nu
       <PointMaterial
         transparent
         size={0.025}
-        color="#60a5fa"
+        color="#D3D3FF"
         sizeAttenuation
         depthWrite={false}
         opacity={0.7}
@@ -102,8 +102,8 @@ function AIOrb({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number
       <sphereGeometry args={[0.55, 48, 48]} />
       <meshStandardMaterial
         ref={mat}
-        color="#a78bfa"
-        emissive="#60a5fa"
+        color="#ED80E9"
+        emissive="#9400D3"
         emissiveIntensity={0.8}
         roughness={0.1}
         metalness={0.6}
@@ -128,7 +128,7 @@ function GlowRing() {
   return (
     <mesh ref={ref} rotation={[Math.PI / 3, 0, 0]}>
       <torusGeometry args={[1.1, 0.004, 16, 100]} />
-      <meshBasicMaterial color="#60a5fa" transparent opacity={0.35} />
+      <meshBasicMaterial color="#9400D3" transparent opacity={0.35} />
     </mesh>
   );
 }
@@ -140,8 +140,8 @@ function Scene({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number
   return (
     <>
       <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1.5} color="#60a5fa" />
-      <pointLight position={[-5, -5, -5]} intensity={0.8} color="#a78bfa" />
+      <pointLight position={[5, 5, 5]} intensity={1.5} color="#9400D3" />
+      <pointLight position={[-5, -5, -5]} intensity={0.8} color="#ED80E9" />
       <AIOrb mouse={mouse} />
       <GlowRing />
       <Particles mouse={mouse} />

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { BrainCircuit } from "lucide-react";
 
 interface NavbarProps {
   userName?: string | null;
@@ -18,12 +19,14 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
 
         {/* ── Logo ── */}
         <Link href="/" className="flex items-center gap-2.5 group shrink-0" onClick={() => setOpen(false)}>
-          <Image src="/logo.svg" alt="PrepWise Logo" width={34} height={28} />
+          <div className="bg-gradient-to-br from-[#9400D3]/30 to-[#ED80E9]/30 p-1.5 rounded-lg border border-[#D8BFD8]/20">
+            <BrainCircuit className="size-6 text-[#D3D3FF]" />
+          </div>
           <span
             className="font-bold text-lg tracking-tight text-primary-100 group-hover:text-white transition-colors"
             style={{ fontFamily: "var(--font-space-grotesk)" }}
           >
-            Prep<span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">Wise</span>
+            Prep<span className="bg-gradient-to-r from-[#9400D3] to-[#ED80E9] bg-clip-text text-transparent">Wise</span>
           </span>
         </Link>
 
@@ -37,7 +40,7 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
               <form action={signOutAction}>
                 <button
                   type="submit"
-                  className="text-sm text-primary-200/80 hover:text-white transition-all duration-300 px-4 py-1.5 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5"
+                  className="text-sm text-primary-200/80 hover:text-white transition-all duration-300 px-4 py-1.5 rounded-full border border-[#9400D3]/20 hover:border-[#ED80E9]/30 hover:bg-[#9400D3]/10"
                 >
                   Logout
                 </button>
@@ -46,7 +49,7 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
           ) : (
             <Link
               href="/sign-in"
-              className="text-sm font-medium text-primary-200 hover:text-white transition-all duration-300 px-5 py-2 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5"
+              className="text-sm font-medium text-primary-100 hover:text-white transition-all duration-300 px-5 py-2 rounded-full border border-[#9400D3]/20 hover:border-[#ED80E9]/30 hover:bg-[#9400D3]/10"
             >
               Login
             </Link>
@@ -56,7 +59,7 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
         {/* ── Mobile hamburger ── */}
         <button
           aria-label="Toggle menu"
-          className="sm:hidden flex flex-col justify-center items-center gap-[5px] w-9 h-9 rounded-xl border border-white/10 hover:bg-white/5 transition-all"
+          className="sm:hidden flex flex-col justify-center items-center gap-[5px] w-9 h-9 rounded-xl border border-[#9400D3]/15 hover:bg-[#9400D3]/10 transition-all"
           onClick={() => setOpen((v) => !v)}
         >
           <span
@@ -79,7 +82,7 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
         className="sm:hidden overflow-hidden transition-all duration-300 ease-in-out"
         style={{ maxHeight: open ? "200px" : "0px", opacity: open ? 1 : 0 }}
       >
-        <div className="pt-4 pb-2 border-t border-white/8 mt-3 flex flex-col gap-3">
+        <div className="pt-4 pb-2 border-t border-[#9400D3]/10 mt-3 flex flex-col gap-3">
           {userName ? (
             <>
               <p className="text-sm text-white/50 px-1">
@@ -88,7 +91,7 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
               <form action={signOutAction}>
                 <button
                   type="submit"
-                  className="w-full text-sm text-left text-primary-200/80 hover:text-white transition-colors px-4 py-2.5 rounded-xl border border-white/10 hover:bg-white/5"
+                  className="w-full text-sm text-left text-primary-200/80 hover:text-white transition-colors px-4 py-2.5 rounded-xl border border-[#9400D3]/15 hover:bg-[#9400D3]/10"
                 >
                   Logout
                 </button>
@@ -98,7 +101,7 @@ export default function Navbar({ userName, signOutAction }: NavbarProps) {
             <Link
               href="/sign-in"
               onClick={() => setOpen(false)}
-              className="text-sm font-medium text-center text-primary-200 hover:text-white transition-all px-5 py-2.5 rounded-xl border border-white/10 hover:bg-white/5"
+              className="text-sm font-medium text-center text-primary-100 hover:text-white transition-all px-5 py-2.5 rounded-xl border border-[#9400D3]/15 hover:bg-[#9400D3]/10"
             >
               Login
             </Link>

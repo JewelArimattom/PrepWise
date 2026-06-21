@@ -46,9 +46,9 @@ const InterviewSetupForm = () => {
   };
 
   const inputClasses =
-    "w-full px-4 py-3.5 bg-white/[0.04] border border-white/10 rounded-xl text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/30 transition-all duration-300 outline-none backdrop-blur-sm";
+    "w-full px-4 py-3.5 bg-[#1A1230]/60 border border-[#9400D3]/15 rounded-xl text-gray-100 placeholder-[#D8BFD8]/30 focus:ring-2 focus:ring-[#9400D3]/40 focus:border-[#9400D3]/30 transition-all duration-300 outline-none backdrop-blur-sm";
 
-  const labelClasses = "block text-sm font-medium text-gray-300 mb-1.5";
+  const labelClasses = "block text-sm font-medium text-[#D8BFD8] mb-1.5";
 
   return (
     <motion.div
@@ -57,12 +57,12 @@ const InterviewSetupForm = () => {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="w-full max-w-3xl mx-auto p-6 sm:p-10"
     >
-      <div className="relative rounded-3xl shadow-2xl border border-white/8 overflow-hidden">
+      <div className="relative rounded-3xl shadow-2xl border border-[#9400D3]/10 overflow-hidden">
         {/* glass background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent backdrop-blur-2xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1230]/40 via-[#0C0714]/30 to-transparent backdrop-blur-2xl" />
         {/* glow accents */}
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px]" />
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-violet-500/10 rounded-full blur-[100px]" />
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#9400D3]/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#ED80E9]/10 rounded-full blur-[100px]" />
 
         <div className="relative p-6 sm:p-8">
           {/* Header */}
@@ -72,10 +72,10 @@ const InterviewSetupForm = () => {
             transition={{ delay: 0.15 }}
             className="text-center mb-10"
           >
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 mb-3">
+            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D3D3FF] via-[#ED80E9] to-[#9400D3] mb-3">
               AI Interview Setup
             </h1>
-            <p className="text-gray-400 text-lg">
+            <p className="text-[#D8BFD8]/60 text-lg">
               Create your personalized interview experience
             </p>
           </motion.div>
@@ -184,8 +184,8 @@ const InterviewSetupForm = () => {
                 disabled={isLoading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-xl text-white font-semibold
-                         disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_8px_32px_rgba(96,165,250,0.3)] hover:shadow-[0_12px_48px_rgba(96,165,250,0.45)] transition-shadow duration-300 relative overflow-hidden"
+                className="w-full py-4 px-6 bg-gradient-to-r from-[#9400D3] via-[#D8BFD8] to-[#ED80E9] rounded-xl text-white font-semibold
+                         disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_8px_32px_rgba(148,0,211,0.3)] hover:shadow-[0_12px_48px_rgba(148,0,211,0.45)] transition-shadow duration-300 relative overflow-hidden"
               >
                 {!isLoading && (
                   <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
@@ -205,13 +205,13 @@ const InterviewSetupForm = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-center text-gray-400"
+                  className="text-center text-[#D8BFD8]/60"
                 >
                   <div className="flex items-center justify-center gap-2">
                     {[0, 1, 2].map((i) => (
                       <motion.span
                         key={i}
-                        className="size-2.5 rounded-full bg-blue-400"
+                        className="size-2.5 rounded-full bg-[#ED80E9]"
                         animate={{ y: [0, -8, 0], opacity: [0.4, 1, 0.4] }}
                         transition={{
                           duration: 0.6,
@@ -242,9 +242,9 @@ const InterviewSetupForm = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="space-y-6 bg-white/[0.03] backdrop-blur-md p-6 rounded-xl border border-white/10"
+                  className="space-y-6 bg-[#1A1230]/40 backdrop-blur-md p-6 rounded-xl border border-[#9400D3]/15"
                 >
-                  <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                  <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#D3D3FF] to-[#ED80E9]">
                     Interview Created! 🎉
                   </h2>
                   <div className="space-y-3">
@@ -254,9 +254,9 @@ const InterviewSetupForm = () => {
                         initial={{ opacity: 0, x: -15 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.08 }}
-                        className="flex items-start space-x-4 p-4 bg-white/[0.03] rounded-lg border border-white/8 hover:border-blue-500/20 transition-colors duration-300"
+                        className="flex items-start space-x-4 p-4 bg-[#0C0714]/40 rounded-lg border border-[#9400D3]/10 hover:border-[#ED80E9]/20 transition-colors duration-300"
                       >
-                        <span className="text-blue-400 font-medium shrink-0">{index + 1}.</span>
+                        <span className="text-[#ED80E9] font-medium shrink-0">{index + 1}.</span>
                         <p className="text-gray-200">{q}</p>
                       </motion.div>
                     ))}

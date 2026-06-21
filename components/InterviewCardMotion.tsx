@@ -12,22 +12,19 @@ const InterviewCardMotion = ({
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.5,
-        delay: index * 0.12,
+        delay: index * 0.1,
         ease: [0.22, 1, 0.36, 1],
       }}
       whileHover={{
-        y: -10,
-        scale: 1.03,
-        transition: { type: "spring", stiffness: 260, damping: 20 },
+        y: -6,
+        transition: { type: "spring", stiffness: 300, damping: 25 },
       }}
-      className="card-border card-premium w-[360px] max-sm:w-full min-h-96 group"
+      className="w-[300px] sm:w-[340px] shrink-0 h-full group cursor-pointer"
     >
-      {/* gradient border glow on hover */}
-      <div className="card-glow-border" />
       {children}
     </motion.div>
   );

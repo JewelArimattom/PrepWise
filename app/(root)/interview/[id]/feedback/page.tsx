@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
+import { Star, CalendarDays } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import {
@@ -36,10 +37,10 @@ const FeedbackPage = async ({ params }: RouteParams) => {
     <section className="section-feedback">
       {/* ── HEADER ── */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#D3D3FF] via-[#ED80E9] to-[#9400D3] bg-clip-text text-transparent">
           Interview Feedback
         </h1>
-        <p className="text-lg text-gray-300">
+        <p className="text-lg text-[#D8BFD8]/70">
           <span className="capitalize">{interview.role}</span> Interview Assessment
         </p>
       </div>
@@ -48,21 +49,21 @@ const FeedbackPage = async ({ params }: RouteParams) => {
       <div className="flex flex-row justify-center">
         <div className="flex flex-row gap-6 items-center glass-panel rounded-2xl px-6 py-3">
           <div className="flex flex-row gap-2 items-center">
-            <Image src="/star.svg" width={22} height={22} alt="star" />
+            <Star className="size-[22px] text-[#ED80E9]" />
             <p>
               Overall Score:{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold text-lg">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D3D3FF] to-[#ED80E9] font-bold text-lg">
                 {feedback?.totalScore ?? "N/A"}
               </span>
-              <span className="text-gray-400">/100</span>
+              <span className="text-[#D8BFD8]/50">/100</span>
             </p>
           </div>
 
-          <div className="h-6 w-px bg-white/10" />
+          <div className="h-6 w-px bg-[#9400D3]/15" />
 
           <div className="flex flex-row gap-2 items-center">
-            <Image src="/calendar.svg" width={22} height={22} alt="calendar" />
-            <p className="text-gray-300">
+            <CalendarDays className="size-[22px] text-[#9400D3]" />
+            <p className="text-[#D8BFD8]/70">
               {feedback?.createdAt
                 ? dayjs(feedback.createdAt).format("MMM D, YYYY h:mm A")
                 : "N/A"}
@@ -71,7 +72,7 @@ const FeedbackPage = async ({ params }: RouteParams) => {
         </div>
       </div>
 
-      <hr className="border-white/8" />
+      <hr className="border-[#9400D3]/10" />
 
       {/* ── ASSESSMENT ── */}
       <div className="glass-panel rounded-2xl p-6">
@@ -82,27 +83,27 @@ const FeedbackPage = async ({ params }: RouteParams) => {
       {feedback?.categoryScores && feedback.categoryScores.length > 0 && (
         <div className="flex flex-col gap-4">
           <h2 className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-blue-400" />
+            <span className="size-2 rounded-full bg-[#ED80E9]" />
             Breakdown of the Interview
           </h2>
           <div className="grid gap-4">
             {feedback.categoryScores.map((category, index) => (
               <div
                 key={index}
-                className="glass-panel rounded-xl p-5 hover:border-blue-500/20 transition-colors duration-300"
+                className="glass-panel rounded-xl p-5 hover:border-[#ED80E9]/20 transition-colors duration-300"
               >
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-bold text-gray-100">
                     {index + 1}. {category.name}
                   </p>
-                  <span className="text-sm font-semibold px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300">
+                  <span className="text-sm font-semibold px-3 py-1 rounded-full bg-[#9400D3]/10 border border-[#9400D3]/20 text-[#D3D3FF]">
                     {category.score}/100
                   </span>
                 </div>
                 {/* Score bar */}
-                <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden mb-3">
+                <div className="h-1.5 w-full rounded-full bg-[#1A1230]/60 overflow-hidden mb-3">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-700"
+                    className="h-full rounded-full bg-gradient-to-r from-[#9400D3] to-[#ED80E9] transition-all duration-700"
                     style={{ width: `${category.score}%` }}
                   />
                 </div>

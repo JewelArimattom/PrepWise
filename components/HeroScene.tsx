@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 
-
 /* tiny orbiting dots around the orb */
 const orbitDots = Array.from({ length: 6 }, (_, i) => ({
   id: i,
@@ -25,42 +24,27 @@ const waveBars = Array.from({ length: 18 }, (_, i) => ({
 }));
 
 const HeroScene = () => {
-  const scene = process.env.NEXT_PUBLIC_SPLINE_SCENE_URL;
-
-  if (scene) {
-    return (
-      <div className="hero-scene-wrapper">
-        <iframe
-          src={scene}
-          title="Spline Scene"
-          className="h-full w-full"
-          loading="lazy"
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="hero-scene-wrapper">
+    <div className="hero-scene-wrapper relative w-full h-[600px] overflow-hidden flex items-center justify-center">
       {/* ── Deep background glow ── */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(96,165,250,0.12),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(148,0,211,0.12),transparent_60%)]" />
 
       {/* ── Outer ring 1 ── */}
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-80 rounded-full border border-dashed border-white/8"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-80 rounded-full border border-dashed border-[#9400D3]/15"
       />
 
       {/* ── Outer ring 2 ── */}
       <motion.div
         animate={{ rotate: -360 }}
         transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-64 rounded-[2rem] border border-blue-300/15"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-64 rounded-[2rem] border border-[#D8BFD8]/20"
       >
         {/* dots on ring */}
-        <div className="absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-blue-400/60" />
-        <div className="absolute -bottom-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-violet-400/60" />
+        <div className="absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-[#ED80E9]/60" />
+        <div className="absolute -bottom-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-[#9400D3]/60" />
       </motion.div>
 
       {/* ── Inner rotating ring ── */}
@@ -69,8 +53,8 @@ const HeroScene = () => {
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-48 rounded-full border border-white/10"
       >
-        <div className="absolute -left-1 top-1/2 size-2.5 -translate-y-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.7)]" />
-        <div className="absolute -right-1 top-1/2 size-2 -translate-y-1/2 rounded-full bg-purple-400 shadow-[0_0_12px_rgba(192,132,252,0.7)]" />
+        <div className="absolute -left-1 top-1/2 size-2.5 -translate-y-1/2 rounded-full bg-[#D3D3FF] shadow-[0_0_12px_rgba(211,211,255,0.7)]" />
+        <div className="absolute -right-1 top-1/2 size-2 -translate-y-1/2 rounded-full bg-[#ED80E9] shadow-[0_0_12px_rgba(237,128,233,0.7)]" />
       </motion.div>
 
       {/* ── Central AI Orb ── */}
@@ -83,10 +67,10 @@ const HeroScene = () => {
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       >
         {/* glow behind orb */}
-        <div className="absolute inset-0 scale-150 rounded-full bg-gradient-to-br from-blue-500/40 via-indigo-500/30 to-purple-500/40 blur-3xl" />
+        <div className="absolute inset-0 scale-150 rounded-full bg-gradient-to-br from-[#9400D3]/40 via-[#D8BFD8]/30 to-[#ED80E9]/40 blur-3xl" />
 
         {/* main orb */}
-        <div className="relative size-36 rounded-full bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600 shadow-[0_0_80px_rgba(96,165,250,0.6),inset_0_-6px_24px_rgba(0,0,0,0.3)]">
+        <div className="relative size-36 rounded-full bg-gradient-to-br from-[#9400D3] via-[#D8BFD8] to-[#ED80E9] shadow-[0_0_80px_rgba(148,0,211,0.5),inset_0_-6px_24px_rgba(0,0,0,0.3)]">
           {/* glass highlight */}
           <div className="absolute top-2 left-4 h-12 w-20 rounded-full bg-gradient-to-br from-white/25 to-transparent blur-sm" />
 
@@ -138,11 +122,11 @@ const HeroScene = () => {
               left: "50%",
               transform: `translateX(-50%) rotate(${dot.angle}deg)`,
               background: dot.id % 2 === 0
-                ? "rgba(96,165,250,0.7)"
-                : "rgba(167,139,250,0.7)",
+                ? "rgba(148,0,211,0.7)"
+                : "rgba(237,128,233,0.7)",
               boxShadow: dot.id % 2 === 0
-                ? "0 0 8px rgba(96,165,250,0.5)"
-                : "0 0 8px rgba(167,139,250,0.5)",
+                ? "0 0 8px rgba(148,0,211,0.5)"
+                : "0 0 8px rgba(237,128,233,0.5)",
             }}
           />
         </motion.div>
@@ -152,20 +136,20 @@ const HeroScene = () => {
       <motion.div
         animate={{ y: [0, -6, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-8 right-8 px-3 py-1.5 rounded-lg bg-white/5 backdrop-blur-md border border-white/10 text-[11px] text-blue-200/80 tracking-wide"
+        className="absolute top-8 right-8 px-3 py-1.5 rounded-lg bg-[#9400D3]/8 backdrop-blur-md border border-[#9400D3]/15 text-[11px] text-[#D3D3FF]/80 tracking-wide"
       >
         🧠 AI Ready
       </motion.div>
       <motion.div
         animate={{ y: [0, 5, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        className="absolute bottom-10 left-8 px-3 py-1.5 rounded-lg bg-white/5 backdrop-blur-md border border-white/10 text-[11px] text-violet-200/80 tracking-wide"
+        className="absolute bottom-10 left-8 px-3 py-1.5 rounded-lg bg-[#ED80E9]/8 backdrop-blur-md border border-[#ED80E9]/15 text-[11px] text-[#D8BFD8]/80 tracking-wide"
       >
         🎤 Voice Active
       </motion.div>
 
       {/* ── Overlay for depth ── */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_30%,rgba(2,6,23,0.5))]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_30%,rgba(12,7,20,0.5))]" />
     </div>
   );
 };

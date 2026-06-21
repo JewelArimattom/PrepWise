@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { BrainCircuit } from "lucide-react";
 
 const footerLinks = {
   Product: [
@@ -28,16 +29,16 @@ export default function Footer() {
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-px"
         style={{
           background:
-            "linear-gradient(90deg, transparent, rgba(96,165,250,0.4), rgba(167,139,250,0.4), transparent)",
+            "linear-gradient(90deg, transparent, rgba(148,0,211,0.4), rgba(237,128,233,0.4), transparent)",
         }}
       />
 
       <div
         className="rounded-2xl px-8 py-10 mt-px"
         style={{
-          background: "rgba(255,255,255,0.025)",
+          background: "rgba(20,10,40,0.35)",
           backdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.07)",
+          border: "1px solid rgba(148,0,211,0.1)",
         }}
       >
         {/* ── Top grid ── */}
@@ -46,29 +47,27 @@ export default function Footer() {
           {/* Brand column */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2.5 w-fit group">
-              <Image src="/logo.svg" alt="PrepWise Logo" width={32} height={27} />
+              <div className="bg-gradient-to-br from-[#9400D3]/30 to-[#ED80E9]/30 p-1 rounded-lg border border-[#D8BFD8]/20">
+                <BrainCircuit className="size-5 text-[#D3D3FF]" />
+              </div>
               <span
                 className="font-bold text-lg tracking-tight text-white/90 group-hover:text-white transition-colors"
                 style={{ fontFamily: "var(--font-space-grotesk)" }}
               >
-                Prep<span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">Wise</span>
+                Prep<span className="bg-gradient-to-r from-[#9400D3] to-[#ED80E9] bg-clip-text text-transparent">Wise</span>
               </span>
             </Link>
             <p className="text-sm text-white/40 leading-relaxed max-w-[200px]">
               AI-powered mock interviews to help you land your dream job.
             </p>
 
-            {/* Subtle status badge */}
-            <div className="flex items-center gap-2 mt-1">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-white/35 tracking-wide">All systems operational</span>
-            </div>
+           
           </div>
 
           {/* Link columns */}
           {Object.entries(footerLinks).map(([group, links]) => (
             <div key={group} className="flex flex-col gap-3">
-              <p className="text-xs font-semibold text-white/30 uppercase tracking-[0.18em] mb-1">
+              <p className="text-xs font-semibold text-[#D8BFD8]/50 uppercase tracking-[0.18em] mb-1">
                 {group}
               </p>
               {links.map((link) => (
@@ -78,7 +77,7 @@ export default function Footer() {
                   {...("external" in link && link.external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="text-sm text-white/50 hover:text-white transition-colors duration-200 w-fit"
+                  className="text-sm text-white/50 hover:text-[#ED80E9] transition-colors duration-200 w-fit"
                 >
                   {link.label}
                 </Link>
@@ -90,14 +89,14 @@ export default function Footer() {
         {/* ── Bottom bar ── */}
         <div
           className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+          style={{ borderTop: "1px solid rgba(148,0,211,0.08)" }}
         >
           <p className="text-xs text-white/25 text-center sm:text-left">
-            © {year} PrepWise. Built with ❤️ to help you succeed.
+            © {year} PrepWise.
           </p>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-white/20">Powered by</span>
-            <span className="text-xs font-semibold bg-gradient-to-r from-blue-400/70 to-violet-400/70 bg-clip-text text-transparent">
+            <span className="text-xs font-semibold bg-gradient-to-r from-[#9400D3]/70 to-[#ED80E9]/70 bg-clip-text text-transparent">
               Google Gemini · Vapi AI
             </span>
           </div>

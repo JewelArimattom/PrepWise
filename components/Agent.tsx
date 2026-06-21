@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { Mic, MicOff, Settings, Volume2, Bot, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
@@ -32,8 +32,8 @@ const MicWaveform = ({ active, speaking }: { active: boolean; speaking: boolean 
         className={cn(
           "w-[3px] rounded-full",
           speaking
-            ? "bg-gradient-to-t from-blue-500 to-cyan-300"
-            : "bg-gradient-to-t from-blue-500/40 to-violet-300/40"
+            ? "bg-gradient-to-t from-[#9400D3] to-[#D3D3FF]"
+            : "bg-gradient-to-t from-[#9400D3]/40 to-[#D8BFD8]/40"
         )}
         animate={
           active && speaking
@@ -57,7 +57,7 @@ const TypingIndicator = () => (
     {[0, 1, 2].map((i) => (
       <motion.span
         key={i}
-        className="size-2 rounded-full bg-blue-400"
+        className="size-2 rounded-full bg-[#ED80E9]"
         animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
         transition={{
           duration: 0.6,
@@ -267,22 +267,22 @@ const Agent = ({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-500 bg-clip-text text-transparent"
+          className="text-3xl font-bold bg-gradient-to-r from-[#D3D3FF] via-[#ED80E9] to-[#9400D3] bg-clip-text text-transparent"
         >
           {type === "generate" ? "Practice Interview" : "Technical Assessment"}
         </motion.h2>
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          <p className="text-gray-400 text-sm">Live AI-powered interview session</p>
+          <p className="text-[#D8BFD8]/60 text-sm">Live AI-powered interview session</p>
           <span className={cn(
             "text-xs px-3 py-1 rounded-full border transition-all duration-500",
             isActive
               ? "bg-emerald-500/15 border-emerald-400/30 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-              : "bg-blue-500/10 border-blue-400/25 text-blue-200"
+              : "bg-[#9400D3]/10 border-[#9400D3]/25 text-[#D3D3FF]"
           )}>
             {isActive && <span className="inline-block size-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />}
             {callStatus}
           </span>
-          <span className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 font-mono tracking-wider">
+          <span className="text-xs px-3 py-1 rounded-full bg-[#1A1230]/60 border border-[#9400D3]/10 text-[#D8BFD8] font-mono tracking-wider">
             {formatTime(elapsedSeconds)}
           </span>
         </div>
@@ -290,13 +290,13 @@ const Agent = ({
 
       {/* Progress Bar */}
       <div className="w-full">
-        <div className="mb-2 flex items-center justify-between text-xs text-gray-400">
+        <div className="mb-2 flex items-center justify-between text-xs text-[#D8BFD8]/50">
           <span>Interview progress</span>
           <span>{Math.round(progressPercent)}%</span>
         </div>
-        <div className="h-2.5 w-full rounded-full bg-white/5 overflow-hidden border border-white/5">
+        <div className="h-2.5 w-full rounded-full bg-[#1A1230]/60 overflow-hidden border border-[#9400D3]/8">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-blue-500 via-cyan-400 to-violet-500 shadow-[0_0_16px_rgba(96,165,250,0.4)]"
+            className="h-full rounded-full bg-gradient-to-r from-[#9400D3] via-[#ED80E9] to-[#D3D3FF] shadow-[0_0_16px_rgba(148,0,211,0.4)]"
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -315,26 +315,22 @@ const Agent = ({
         >
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <Image
-                src="/ai-avatar.png"
-                alt="AI Interviewer"
-                width={90}
-                height={90}
-                className="rounded-full border-2 border-blue-500/30 shadow-[0_0_30px_rgba(96,165,250,0.2)]"
-              />
+              <div className="size-[90px] rounded-full border-2 border-[#9400D3]/30 shadow-[0_0_30px_rgba(148,0,211,0.2)] bg-[#1A1230] flex flex-col items-center justify-center text-[#D3D3FF]">
+                <Bot className="size-10" />
+              </div>
               {isSpeaking && (
                 <motion.span
-                  className="absolute -bottom-1 -right-1 size-5 bg-blue-500 rounded-full"
+                  className="absolute -bottom-1 -right-1 size-5 bg-[#ED80E9] rounded-full"
                   animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
                 />
               )}
               {isActive && (
-                <span className="absolute top-0 right-0 size-3 bg-emerald-400 rounded-full border-2 border-gray-900 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <span className="absolute top-0 right-0 size-3 bg-emerald-400 rounded-full border-2 border-[#0C0714] shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
               )}
             </div>
             <h3 className="text-lg font-semibold text-gray-100">AI Interviewer</h3>
-            <p className="text-sm text-gray-400">Technical Expert</p>
+            <p className="text-sm text-[#D8BFD8]/60">Technical Expert</p>
             <MicWaveform active={isActive} speaking={isSpeaking} />
           </div>
         </motion.div>
@@ -348,19 +344,15 @@ const Agent = ({
         >
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <Image
-                src="/user-avatar.png"
-                alt={userName}
-                width={90}
-                height={90}
-                className="rounded-full border-2 border-purple-500/30 shadow-[0_0_30px_rgba(167,139,250,0.2)]"
-              />
+              <div className="size-[90px] rounded-full border-2 border-[#ED80E9]/30 shadow-[0_0_30px_rgba(237,128,233,0.2)] bg-[#0C0714] flex flex-col items-center justify-center text-[#ED80E9]">
+                <User className="size-10" />
+              </div>
               {isActive && (
-                <span className="absolute top-0 right-0 size-3 bg-emerald-400 rounded-full border-2 border-gray-900 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <span className="absolute top-0 right-0 size-3 bg-emerald-400 rounded-full border-2 border-[#0C0714] shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
               )}
             </div>
             <h3 className="text-lg font-semibold text-gray-100">{userName}</h3>
-            <p className="text-sm text-gray-400">Candidate</p>
+            <p className="text-sm text-[#D8BFD8]/60">Candidate</p>
             {isActive && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -388,11 +380,11 @@ const Agent = ({
             className="agent-card !p-6"
           >
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-medium text-gray-400 flex items-center gap-2">
-                <span className="size-2 rounded-full bg-blue-400 animate-pulse" />
+              <h4 className="text-sm font-medium text-[#D8BFD8]/60 flex items-center gap-2">
+                <span className="size-2 rounded-full bg-[#ED80E9] animate-pulse" />
                 Live Transcript
               </h4>
-              <span className="text-xs text-gray-500 bg-gray-700/50 px-2.5 py-1 rounded-full">
+              <span className="text-xs text-[#D8BFD8]/40 bg-[#1A1230]/60 px-2.5 py-1 rounded-full">
                 {messages.length} messages
               </span>
             </div>
@@ -401,13 +393,13 @@ const Agent = ({
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
-                className="inline-block w-0.5 h-5 bg-blue-400 ml-0.5 align-text-bottom"
+                className="inline-block w-0.5 h-5 bg-[#ED80E9] ml-0.5 align-text-bottom"
               />
             </p>
             {isSpeaking && (
               <div className="flex items-center gap-2 mt-3">
                 <TypingIndicator />
-                <span className="text-xs text-blue-300">AI is speaking...</span>
+                <span className="text-xs text-[#D3D3FF]/60">AI is speaking...</span>
               </div>
             )}
           </motion.div>
@@ -430,13 +422,13 @@ const Agent = ({
             className={cn(
               "px-12 py-4 rounded-2xl font-semibold text-white transition-all duration-300 relative overflow-hidden",
               callStatus === "CONNECTING"
-                ? "bg-gray-700/50 text-gray-400 cursor-wait"
-                : "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-[0_8px_32px_rgba(96,165,250,0.3)] hover:shadow-[0_12px_48px_rgba(96,165,250,0.45)]"
+                ? "bg-[#1A1230]/50 text-[#D8BFD8]/50 cursor-wait"
+                : "bg-gradient-to-r from-[#9400D3] via-[#D8BFD8] to-[#ED80E9] shadow-[0_8px_32px_rgba(148,0,211,0.3)] hover:shadow-[0_12px_48px_rgba(148,0,211,0.45)]"
             )}
           >
             {/* button glow */}
             {callStatus !== "CONNECTING" && !isSubmittingFeedback && (
-              <span className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 animate-pulse" />
+              <span className="absolute inset-0 bg-gradient-to-r from-[#9400D3]/20 to-[#ED80E9]/20 animate-pulse" />
             )}
             <span className="relative z-10">
               {isSubmittingFeedback
